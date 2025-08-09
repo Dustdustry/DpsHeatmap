@@ -23,6 +23,8 @@ public class DpsHeatmap{
     private static boolean showPlayerTeam;
     private static boolean checkGround, checkFly;
 
+    private static float minDamage, maxDamage;
+
     public static void update(){
         enable = DpsSettings.enable.get();
 
@@ -30,6 +32,9 @@ public class DpsHeatmap{
         checkGround = targetMode.ground();
         checkFly = targetMode.fly();
         showPlayerTeam = DpsSettings.showPlayerTeam.get();
+
+        minDamage = DpsSettings.minDamage.get();
+        maxDamage = DpsSettings.maxDamage.get();
     }
 
     public static void draw(){
@@ -74,6 +79,16 @@ public class DpsHeatmap{
                     }
 
                     float dps = baseTurret.estimateDps() * rules.blockDamage(data.team);
+                    // If not an instance of TurretBuild, needn't check.
+                    if(baseTurret instanceof TurretBuild turret){
+                        Turret turretBlock = (Turret)turret.block;
+                        if((checkFly && !checkGround && !turretBlock.targetAir) || (checkGround && !checkFly && !turretBlock.targetGround)){
+                            return;
+                        }
+
+                        // anuke forgot it
+                        dps *= Math.min(Math.max(turret.heatReq / turretBlock.heatRequirement, turret.cheating() ? 1f : 0f), turretBlock.maxHeatEfficiency);
+                    }
 
                     // anuke forgot it
                     BaseTurret baseBlock = (BaseTurret)baseTurret.block;
@@ -104,7 +119,7 @@ public class DpsHeatmap{
     }
 
     private static void drawDpsRange(Position pos, float dps, float range){
-        float mapped = Mathf.map(dps, DpsSettings.minDamage.get(), DpsSettings.maxDamage.get(), 0f, 1f);
+        float mapped = Mathf.map(dps, minDamage, maxDamage, 0f, 1f);
         float alpha = Mathf.clamp(mapped, 0f, 1f);
 
         if(Mathf.equal(alpha, 0f)){
