@@ -26,19 +26,19 @@ void main() {
     float damageAlpha = texColor.a;
 
     if (damageAlpha > 0.0) {
-        vec2 detect = u_inv * 3.0;
+        vec2 width = u_inv * 3.0;
         bool isEdge = false;
 
         vec2 offsets[4] = vec2[4](
-        vec2(detect.x, 0.0),
-        vec2(-detect.x, 0.0),
-        vec2(0.0,  detect.y),
-        vec2(0.0, -detect.y)
+        vec2(width.x, 0.0),
+        vec2(-width.x, 0.0),
+        vec2(0.0,  width.y),
+        vec2(0.0, -width.y)
         );
 
         for (int i = 0; i < 4; i++) {
             vec2 sampleCoord = v_texCoords + offsets[i];
-            if (texture2D(u_texture, sampleCoord).a < 0.01) {
+            if (texture2D(u_texture, sampleCoord).a < 0.0001) {
                 isEdge = true;
                 break;
             }
