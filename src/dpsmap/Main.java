@@ -1,14 +1,9 @@
 package dpsmap;
 
 import arc.*;
-import arc.scene.ui.layout.*;
-import arc.util.*;
 import mindustry.*;
 import mindustry.game.EventType.*;
 import mindustry.mod.*;
-import mindustry.type.*;
-import mindustry.ui.*;
-import mindustry.ui.dialogs.*;
 
 public class Main extends Mod{
 
@@ -48,23 +43,5 @@ public class Main extends Mod{
         });
 
         Events.run(Trigger.postDraw, DpsHeatmap::draw);
-    }
-
-    private static void showDpsDialog(){
-        BaseDialog dialog = new BaseDialog("dps");
-        Table table = dialog.cont;
-        table.pane(t -> {
-
-            int i = 0;
-            for(UnitType type : Vars.content.units().copy().sort(UnitType::estimateDps)){
-                t.image(type.uiIcon).size(Vars.iconSmall).scaling(Scaling.fit);
-                t.add(Strings.autoFixed(type.estimateDps(), 2)).style(Styles.outlineLabel).pad(8f);
-                if(++i % 4 == 0){
-                    t.row();
-                }
-            }
-        });
-        dialog.addCloseButton();
-        dialog.show();
     }
 }

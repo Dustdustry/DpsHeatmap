@@ -1,8 +1,16 @@
 package dpsmap;
 
 import arc.*;
+import arc.func.*;
+import arc.scene.ui.layout.*;
+import arc.util.*;
 import mindustry.*;
+import mindustry.graphics.*;
+import mindustry.type.*;
+import mindustry.ui.*;
+import mindustry.ui.dialogs.*;
 import mindustry.ui.dialogs.SettingsMenuDialog.*;
+import mindustry.ui.dialogs.SettingsMenuDialog.SettingsTable.*;
 
 public class DpsSettings{
     public static SettingValue<Boolean> enable, showPlayerTeam;
@@ -26,6 +34,13 @@ public class DpsSettings{
 
     public static void settings(){
         SettingsTable graphics = Vars.ui.settings.graphics;
+
+        graphics.getSettings().add(new Divider("dpsHeatmap", "@dpsHeatmap"));
+
+        graphics.getSettings().add(new CustomTable(t -> {
+            t.button("@dps-table.view", Styles.cleart, DpsSettings::showDpsDialog).height(48f).grow();
+        }));
+
         graphics.checkPref(enable.name, enable.defaultValue);
         graphics.checkPref(showPlayerTeam.name, showPlayerTeam.defaultValue);
         graphics.sliderPref(minDamage.name, minDamage.defaultValue, 0, 200, 10, n -> "" + n);
@@ -34,6 +49,25 @@ public class DpsSettings{
         graphics.sliderPref(alpha.name, alpha.defaultValue, 0, 100, 5, n -> n + "%");
 
         graphics.sliderPref(targetMode.name, targetMode.defaultValue, 0, DpsTargetMode.all.length - 1, 1, n -> DpsTargetMode.all[n].localized());
+    }
+
+    private static void showDpsDialog(){
+        BaseDialog dialog = new BaseDialog("@dps-table");
+        Table table = dialog.cont;
+        table.add("@dps-table.notice").pad(8f).expandX().row();
+        table.pane(t -> {
+
+            int i = 0;
+            for(UnitType type : Vars.content.units().copy().sort(UnitType::estimateDps)){
+                t.image(type.uiIcon).size(Vars.iconSmall).scaling(Scaling.fit);
+                t.add(Strings.autoFixed(type.estimateDps(), 2)).style(Styles.outlineLabel).pad(8f);
+                if(++i % 4 == 0){
+                    t.row();
+                }
+            }
+        });
+        dialog.addCloseButton();
+        dialog.show();
     }
 
     public static class SettingValue<T>{
@@ -73,6 +107,34 @@ public class DpsSettings{
 
         public String localized(){
             return Core.bundle.get("setting." + name + ".name");
+        }
+    }
+
+    private static class CustomTable extends Setting{
+        private final Cons<Table> consumer;
+
+        public CustomTable(Cons<Table> consumer){
+            super("");
+
+            this.consumer = consumer;
+        }
+
+        @Override
+        public void add(SettingsTable table){
+            table.table(consumer).grow().padTop(8f).row();
+        }
+    }
+
+    private static class Divider extends Setting{
+        public Divider(String name, String title){
+            super(name);
+            this.title = title;
+        }
+
+        @Override
+        public void add(SettingsTable table){
+            table.add(title).color(Pal.accent).colspan(4).pad(10).padTop(15).padBottom(4).row();
+            table.image().color(Pal.accent).fillX().height(3).colspan(4).padTop(0).padBottom(10).row();
         }
     }
 }
