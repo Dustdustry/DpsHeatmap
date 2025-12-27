@@ -14,7 +14,7 @@ main: "dpsmap.Main"
 description: "Dps Heatmap"
 
 #the mod version
-version: 1.0
+version: v1.2
 
 #the minimum game build required to run this mod
 minGameVersion: 154
