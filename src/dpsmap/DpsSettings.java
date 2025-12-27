@@ -31,6 +31,7 @@ public class DpsSettings{
         graphics.sliderPref(minDamage.name, minDamage.defaultValue, 0, 200, 10, n -> "" + n);
         graphics.sliderPref(maxDamage.name, maxDamage.defaultValue, 200, 2_0000, 1000, n -> "" + n);
         graphics.sliderPref(intensify.name, intensify.defaultValue, 0, 200, 25, n -> n + "%");
+        graphics.sliderPref(alpha.name, alpha.defaultValue, 0, 100, 5, n -> n + "%");
 
         graphics.sliderPref(targetMode.name, targetMode.defaultValue, 0, DpsTargetMode.all.length - 1, 1, n -> DpsTargetMode.all[n].localized());
     }
