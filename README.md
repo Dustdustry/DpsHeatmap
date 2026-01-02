@@ -11,6 +11,7 @@ Here are available quick settings for desktop.
 * **[ F1 ]** Toggle setting DPS Heatmap Enable
 * **[ F2 ]** Toggle setting show Player's DPS Heatmap
 * **[ F3 ]** Switch setting targetMode (Ground, Fly or Both)
+* **[ F4 ]** Switch setting entityMode (Turret, Unit or Both)
 
 ## Preview
 
