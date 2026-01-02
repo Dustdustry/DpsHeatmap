@@ -7,13 +7,13 @@ import arc.graphics.gl.*;
 import arc.math.*;
 import arc.math.geom.*;
 import arc.util.*;
+import dpsmap.DpsSettings.*;
 import mindustry.*;
 import mindustry.game.*;
 import mindustry.game.Teams.*;
 import mindustry.type.*;
 import mindustry.world.blocks.defense.turrets.*;
 import mindustry.world.blocks.defense.turrets.BaseTurret.*;
-import mindustry.world.blocks.defense.turrets.ReloadTurret.*;
 import mindustry.world.blocks.defense.turrets.Turret.*;
 import mindustry.world.consumers.*;
 import mindustry.world.modules.*;
@@ -22,6 +22,7 @@ public class DpsHeatmap{
     private static boolean enable;
     private static boolean showPlayerTeam;
     private static boolean checkGround, checkFly;
+    private static boolean showTurret, showUnit;
 
     private static float minDamage, maxDamage;
 
@@ -29,10 +30,14 @@ public class DpsHeatmap{
         enable = DpsSettings.enable.get();
 
         DpsTargetMode targetMode = DpsTargetMode.all[DpsSettings.targetMode.get()];
-        checkGround = targetMode.ground();
-        checkFly = targetMode.fly();
-        showPlayerTeam = DpsSettings.showPlayerTeam.get();
+        checkGround = targetMode == DpsTargetMode.ground || targetMode == DpsTargetMode.both;
+        checkFly = targetMode == DpsTargetMode.fly || targetMode == DpsTargetMode.both;
 
+        DpsEntityMode entityMode = DpsEntityMode.all[DpsSettings.entityMode.get()];
+        showTurret = entityMode == DpsEntityMode.turret || entityMode == DpsEntityMode.both;
+        showUnit = entityMode == DpsEntityMode.unit || entityMode == DpsEntityMode.both;
+
+        showPlayerTeam = DpsSettings.showPlayerTeam.get();
         minDamage = DpsSettings.minDamage.get();
         maxDamage = DpsSettings.maxDamage.get();
     }
@@ -57,14 +62,15 @@ public class DpsHeatmap{
             DpsShaders.heatmap.outline.set(data.team.color);
 
             buffer.begin(Color.clear);
-            if(data.unitTree != null){
-                data.unitTree.intersect(rect, unit -> {
+
+            if(showUnit){
+                data.tree().intersect(rect, unit -> {
                     if(unit.inFogTo(team) || !unit.checkTarget(checkGround, checkFly)) return;
                     drawDpsRange(unit, unit.type.estimateDps() * rules.unitDamage(data.team), unit.range());
                 });
             }
 
-            if(data.turretTree != null){
+            if(showTurret && data.turretTree != null){
                 data.turretTree.intersect(rect, build -> {
                     if(build.inFogTo(team) || !(build instanceof BaseTurretBuild baseTurret)){
                         return;

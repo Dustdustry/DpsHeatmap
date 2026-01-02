@@ -1,7 +1,9 @@
 package dpsmap;
 
 import arc.*;
+import dpsmap.DpsSettings.*;
 import mindustry.*;
+import mindustry.core.*;
 import mindustry.game.EventType.*;
 import mindustry.mod.*;
 
@@ -33,6 +35,13 @@ public class Main extends Mod{
                         DpsTargetMode nextMode = DpsTargetMode.all[next];
                         DpsSettings.targetMode.set(next);
                         Vars.ui.showInfoFade(Core.bundle.format("dpsHeatmap.nextTargetMode", nextMode.localized()));
+                    }
+
+                    if(Core.input.keyRelease(DpsKeyBinds.nextEntityMode)){
+                        int next = (DpsSettings.entityMode.get() + 1) % DpsEntityMode.all.length;
+                        DpsEntityMode nextMode = DpsEntityMode.all[next];
+                        DpsSettings.entityMode.set(next);
+                        Vars.ui.showInfoFade(UI.formatIcons(Core.bundle.format("dpsHeatmap.nextEntityMode", nextMode.localized())));
                     }
                 }
 

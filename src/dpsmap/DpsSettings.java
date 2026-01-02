@@ -16,7 +16,7 @@ public class DpsSettings{
     public static SettingValue<Boolean> enable, showPlayerTeam;
     public static SettingValue<Integer> minDamage, maxDamage;
     public static SettingValue<Integer> intensify, alpha;
-    public static SettingValue<Integer> targetMode;
+    public static SettingValue<Integer> targetMode, entityMode;
 
     public static void init(){
         enable = new SettingValue<>("dpsHeatmapEnable", true);
@@ -27,6 +27,8 @@ public class DpsSettings{
         alpha = new SettingValue<>("dpsHeatmapAlpha", 75);
 
         targetMode = new SettingValue<>("dpsHeatmapTargetMode", DpsTargetMode.both.ordinal());
+        entityMode = new SettingValue<>("dpsHeatmapEntityMode", DpsEntityMode.both.ordinal());
+
         settings();
 
         targetMode.reset();
@@ -49,6 +51,7 @@ public class DpsSettings{
         graphics.sliderPref(alpha.name, alpha.defaultValue, 0, 100, 5, n -> n + "%");
 
         graphics.sliderPref(targetMode.name, targetMode.defaultValue, 0, DpsTargetMode.all.length - 1, 1, n -> DpsTargetMode.all[n].localized());
+        graphics.sliderPref(entityMode.name, entityMode.defaultValue, 0, DpsEntityMode.all.length - 1, 1, n -> DpsEntityMode.all[n].localized());
     }
 
     private static void showDpsDialog(){
@@ -56,7 +59,6 @@ public class DpsSettings{
         Table table = dialog.cont;
         table.add("@dps-table.notice").pad(8f).expandX().row();
         table.pane(t -> {
-
             int i = 0;
             for(UnitType type : Vars.content.units().copy().sort(UnitType::estimateDps)){
                 t.image(type.uiIcon).size(Vars.iconSmall).scaling(Scaling.fit);
@@ -135,6 +137,26 @@ public class DpsSettings{
         public void add(SettingsTable table){
             table.add(title).color(Pal.accent).colspan(4).pad(10).padTop(15).padBottom(4).row();
             table.image().color(Pal.accent).fillX().height(3).colspan(4).padTop(0).padBottom(10).row();
+        }
+    }
+
+    public enum DpsTargetMode{
+        ground, fly, both;
+
+        public static final DpsTargetMode[] all = values();
+
+        public String localized(){
+            return Core.bundle.get("dpsHeatmap.targetMode." + name() + ".name", name());
+        }
+    }
+
+    public enum DpsEntityMode{
+        turret, unit, both;
+
+        public static final DpsEntityMode[] all = values();
+
+        public String localized(){
+            return Core.bundle.get("dpsHeatmap.entityMode." + name() + ".name", name());
         }
     }
 }
