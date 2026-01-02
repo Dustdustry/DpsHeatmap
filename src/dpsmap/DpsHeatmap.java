@@ -86,8 +86,10 @@ public class DpsHeatmap{
                             return;
                         }
 
-                        // anuke forgot it
-                        dps *= Math.min(Math.max(turret.heatReq / turretBlock.heatRequirement, turret.cheating() ? 1f : 0f), turretBlock.maxHeatEfficiency);
+                        if(turretBlock.heatRequirement > 0.0){
+                            // anuke forgot it
+                            dps *= Math.min(Math.max(turret.heatReq / turretBlock.heatRequirement, turret.cheating() ? 1f : 0f), turretBlock.maxHeatEfficiency);
+                        }
                     }
 
                     // anuke forgot it
